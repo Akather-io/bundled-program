@@ -19,7 +19,7 @@ pub struct CreatePool<'info> {
         init,
         payer = auth,
         space = Strategies::calculate_size(2),
-        seeds = [STRATEGIES_SEED.as_ref(),pool.key().as_ref()],
+        seeds = [STRATEGIES_SEED.as_ref(), pool.key().as_ref()],
         bump
 
     )]

@@ -57,7 +57,6 @@ describe("bundled-program", () => {
     );
     const [strategiesAccount] = findStrategiesAccount(program.programId, pool);
     const expired_at = new anchor.BN(Math.floor(Date.now() / 1000));
-    const token_symbol = "BTC";
     const fee = new anchor.BN(1);
     const share = new anchor.BN(500);
     const j_probability = 0;
