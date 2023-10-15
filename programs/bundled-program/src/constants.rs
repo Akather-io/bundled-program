@@ -9,6 +9,10 @@ pub const BOOL_SIZE: usize = std::mem::size_of::<bool>();
 pub const I64_SIZE: usize = std::mem::size_of::<i64>();
 pub const U64_SIZE: usize = std::mem::size_of::<u64>();
 pub const U8_SIZE: usize = std::mem::size_of::<u8>();
-pub const STATUS_ENUM_SIZE: usize = 1 + std::mem::size_of::<u8>();
+pub const ENUM_SIZE: usize = 1 + std::mem::size_of::<u8>();
+pub const VECTOR_OVERHEAD_SIZE: usize = 4;
 
 pub const SYSTEM_SEED: &[u8] = b"SYSTEM";
+pub const PROVIDER_POOL_SEED: &[u8] = b"PROVIDER_POOL";
+pub const STRATEGIES_SEED: &[u8] = b"STRATEGIES";
+pub const SYMBOL_MAX_LENGTH: usize = 5;

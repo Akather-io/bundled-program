@@ -1,7 +1,11 @@
 import * as anchor from "@coral-xyz/anchor";
 import { AnchorError, Program } from "@coral-xyz/anchor";
 import { BundledProgram } from "../target/types/bundled_program";
-import { findSystemAccount } from "./utils";
+import {
+  findProviderPoolAccount,
+  findStrategiesAccount,
+  findSystemAccount,
+} from "./utils";
 import { expect } from "chai";
 
 describe("bundled-program", () => {
@@ -13,7 +17,8 @@ describe("bundled-program", () => {
 
   it("Is initialized!", async () => {
     const [systemAccount] = findSystemAccount(program.programId);
-    const tx = await program.methods.initialize()
+    const tx = await program.methods
+      .initialize()
       .accounts({
         system: systemAccount,
         authority: myWallet.publicKey,
@@ -26,7 +31,8 @@ describe("bundled-program", () => {
   it("Cannot re-initialized!", async () => {
     const [systemAccount] = findSystemAccount(program.programId);
     try {
-      const tx = await program.methods.initialize()
+      const tx = await program.methods
+        .initialize()
         .accounts({
           system: systemAccount,
           authority: myWallet.publicKey,
@@ -41,7 +47,90 @@ describe("bundled-program", () => {
         "AlreadyInitialized"
       );
     }
-
   });
+  it("Can create provider pool!", async () => {
+    const [pool] = findProviderPoolAccount(
+      program.programId,
+      myWallet.publicKey
+    );
+    const [strategiesAccount] = findStrategiesAccount(program.programId, pool);
+    const expired_at = new anchor.BN(Math.floor(Date.now() / 1000));
+    const token_symbol = "BTC";
+    const fee = new anchor.BN(1);
+    const share = new anchor.BN(500);
+    const j_probability = 0;
+    const j_return = 1;
+    const j_cost = 2;
+    const strategies = [
+      {
+        tokenSymbol: "BTC",
+        weight: 50,
+        longCall: {
+          strikePrice: new anchor.BN(100),
+          portion: 20,
+        },
+        shortCall: {
+          strikePrice: new anchor.BN(100),
+          portion: 30,
+        },
+        longPut: {
+          strikePrice: new anchor.BN(100),
+          portion: 30,
+        },
+        shortPut: {
+          strikePrice: new anchor.BN(100),
+          portion: 20,
+        },
+      },
+      {
+        tokenSymbol: "BTC",
+        weight: 50,
+        longCall: {
+          strikePrice: new anchor.BN(100),
+          portion: 30,
+        },
+        shortCall: {
+          strikePrice: new anchor.BN(100),
+          portion: 25,
+        },
+        longPut: {
+          strikePrice: new anchor.BN(100),
+          portion: 25,
+        },
+        shortPut: {
+          strikePrice: new anchor.BN(100),
+          portion: 20,
+        },
+      },
+    ];
 
+    const tx = await program.methods
+      .createProviderPool(
+        expired_at,
+        fee,
+        share,
+        j_probability,
+        j_return,
+        j_cost,
+        strategies
+      )
+      .accounts({
+        pool,
+        auth: myWallet.publicKey,
+        strageties: strategiesAccount,
+      })
+      .rpc();
+
+    const poolAccount = await program.account.providerPool.fetch(pool);
+
+    expect(poolAccount.admin.toBase58()).to.equal(
+      myWallet.publicKey.toBase58()
+    );
+    expect(poolAccount.expiredAt).to.equal(expired_at);
+    expect(poolAccount.fee).to.equal(fee);
+    expect(poolAccount.share).to.equal(share);
+    expect(poolAccount.jProbability).to.equal(j_probability);
+    expect(poolAccount.jReturn).to.equal(j_return);
+    expect(poolAccount.jCost).to.equal(j_cost);
+  });
 });
