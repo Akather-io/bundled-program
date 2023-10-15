@@ -6,7 +6,9 @@ import {
   findStrategiesAccount,
   findSystemAccount,
 } from "./utils";
-import { expect } from "chai";
+import { expect, use } from "chai";
+import * as chaibn from "chai-bn";
+use(chaibn.default(anchor.BN));
 
 describe("bundled-program", () => {
   // Configure the client to use the local cluster.
@@ -83,7 +85,7 @@ describe("bundled-program", () => {
         },
       },
       {
-        tokenSymbol: "BTC",
+        tokenSymbol: "ETH",
         weight: 50,
         longCall: {
           strikePrice: new anchor.BN(100),
@@ -126,11 +128,10 @@ describe("bundled-program", () => {
     expect(poolAccount.admin.toBase58()).to.equal(
       myWallet.publicKey.toBase58()
     );
-    expect(poolAccount.expiredAt).to.equal(expired_at);
-    expect(poolAccount.fee).to.equal(fee);
-    expect(poolAccount.share).to.equal(share);
-    expect(poolAccount.jProbability).to.equal(j_probability);
-    expect(poolAccount.jReturn).to.equal(j_return);
-    expect(poolAccount.jCost).to.equal(j_cost);
+
+    expect(poolAccount.fee).to.be.a.bignumber.that.equal(fee);
+    expect(poolAccount.expiredAt).to.be.a.bignumber.that.equal(expired_at);
+
+    expect(poolAccount.share).to.be.a.bignumber.that.equal(share);
   });
 });

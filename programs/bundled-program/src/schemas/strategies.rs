@@ -19,8 +19,10 @@ pub struct Strategy {
 }
 
 impl Strategy {
-    pub const LEN: usize =
-        STRING_LENGTH_PREFIX + SYMBOL_MAX_LENGTH + U8_SIZE + (6 * StrategyCall::LEN);
+    pub const LEN: usize = STRING_LENGTH_PREFIX
+        + SYMBOL_MAX_LENGTH
+        + U8_SIZE
+        + (4 * std::mem::size_of::<Option<StrategyCall>>());
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq)]
@@ -35,8 +37,8 @@ impl StrategyCall {
 
 impl Strategies {
     pub const LEN: usize = DISCRIMINATOR_LENGTH + PUBLIC_KEY_LENGTH + VECTOR_OVERHEAD_SIZE;
-    pub fn calculate_size() -> usize {
-        Strategies::LEN + Strategy::LEN
+    pub fn calculate_size(size: u8) -> usize {
+        Strategies::LEN + (size as usize * Strategy::LEN)
     }
     pub fn init(&mut self, pool: Pubkey, strategies: Vec<Strategy>) {
         self.pool = pool;

@@ -6,6 +6,7 @@ specifiers:
   '@types/chai': ^4.3.0
   '@types/mocha': ^9.0.0
   chai: ^4.3.4
+  chai-bn: ^0.3.1
   mocha: ^9.0.3
   prettier: ^2.6.2
   ts-mocha: ^10.0.0
@@ -19,6 +20,7 @@ devDependencies:
   '@types/chai': 4.3.8
   '@types/mocha': 9.1.1
   chai: 4.3.10
+  chai-bn: 0.3.1_chai@4.3.10
   mocha: 9.2.2
   prettier: 2.8.8
   ts-mocha: 10.0.0_mocha@9.2.2
@@ -305,6 +307,15 @@ packages:
   /camelcase/6.3.0:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
+
+  /chai-bn/0.3.1_chai@4.3.10:
+    resolution: {integrity: sha512-vuzEy0Cb+k8zqi2SHOmvZdRSbKcSOJfS1Nv8+6YDJIyCzfxkTCHLNRyjRIoRJ3WJtYb/c7OHjrvLoGeyO4A/gA==}
+    peerDependencies:
+      bn.js: ^5.0.0
+      chai: ^4.0.0
+    dependencies:
+      chai: 4.3.10
+    dev: true
 
   /chai/4.3.10:
     resolution: {integrity: sha512-0UXG04VuVbruMUYbJ6JctvH0YnC/4q3/AkT18q4NaITo91CUm0liMS9VqzT9vZhVQ/1eqPanMWjBM+Juhfb/9g==}
