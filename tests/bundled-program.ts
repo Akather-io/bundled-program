@@ -7,6 +7,7 @@ import {
   findStrategiesAccount,
   findSystemAccount,
   findUsdcTokenAccount,
+  findUserPoolAccount,
 } from "./utils";
 import { expect, use } from "chai";
 import * as chaibn from "chai-bn";
@@ -142,5 +143,103 @@ describe("bundled-program", () => {
     expect(poolAccount.expiredAt).to.be.a.bignumber.that.equal(expired_at);
 
     expect(poolAccount.share).to.be.a.bignumber.that.equal(share);
+  });
+
+  it("User can join pool!", async () => {
+    const [pool] = findProviderPoolAccount(
+      program.programId,
+      myWallet.publicKey
+    );
+    const [usdc_pool] = findUsdcTokenAccount(pool)
+    const [strategiesAccount] = findStrategiesAccount(program.programId, pool);
+    const expired_at = new anchor.BN(Math.floor(Date.now() / 1000));
+    const fee = new anchor.BN(1);
+    const share = new anchor.BN(500);
+    const j_probability = 0;
+    const j_return = 1;
+    const j_cost = 2;
+    const strategies = [
+      {
+        tokenSymbol: "BTC",
+        weight: 50,
+        longCall: {
+          strikePrice: new anchor.BN(100),
+          portion: 20,
+        },
+        shortCall: {
+          strikePrice: new anchor.BN(100),
+          portion: 30,
+        },
+        longPut: {
+          strikePrice: new anchor.BN(100),
+          portion: 30,
+        },
+        shortPut: {
+          strikePrice: new anchor.BN(100),
+          portion: 20,
+        },
+      },
+      {
+        tokenSymbol: "ETH",
+        weight: 50,
+        longCall: {
+          strikePrice: new anchor.BN(100),
+          portion: 30,
+        },
+        shortCall: {
+          strikePrice: new anchor.BN(100),
+          portion: 25,
+        },
+        longPut: {
+          strikePrice: new anchor.BN(100),
+          portion: 25,
+        },
+        shortPut: {
+          strikePrice: new anchor.BN(100),
+          portion: 20,
+        },
+      },
+    ];
+
+    await program.methods
+      .createProviderPool(
+        expired_at,
+        fee,
+        share,
+        j_probability,
+        j_return,
+        j_cost,
+        strategies
+      )
+      .accounts({
+        pool,
+        auth: myWallet.publicKey,
+        strageties: strategiesAccount,
+        usdcMint: USDC_MINT,
+        usdcPoolTokenAccount: usdc_pool,
+        systemProgram: anchor.web3.SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_PROGRAM_ID,
+        rent: anchor.web3.SYSVAR_RENT_PUBKEY
+      })
+      .rpc();
+
+    const poolAccount = await program.account.providerPool.fetch(pool);
+
+    const [usdc_user] = findUsdcTokenAccount(myWallet.publicKey)
+    const amount = new anchor.BN(2).mul(new anchor.BN(10).pow(new anchor.BN(9)))
+    const [user_pool] = findUserPoolAccount(program.programId, pool, myWallet.publicKey)
+    await program.methods.join(1, amount).accounts({
+      pool,
+      usdcMint: USDC_MINT,
+      usdcUserTokenAccount: usdc_user,
+      usdcPoolTokenAccount: usdc_pool,
+      userPool: user_pool,
+      auth: myWallet.publicKey,
+      systemProgram: anchor.web3.SystemProgram.programId,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      associatedTokenProgram: ASSOCIATED_PROGRAM_ID,
+      rent: anchor.web3.SYSVAR_RENT_PUBKEY
+    })
   });
 });

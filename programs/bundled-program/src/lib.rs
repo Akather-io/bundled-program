@@ -42,4 +42,8 @@ pub mod bundled_program {
             strategies,
         )
     }
+
+    pub fn join(ctx: Context<JoinContext>, opt_num: u8, amount: u64) -> Result<()> {
+        instructions::pool::join::handler(ctx, opt_num, amount)
+    }
 }

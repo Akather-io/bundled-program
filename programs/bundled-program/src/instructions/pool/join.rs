@@ -25,7 +25,6 @@ pub struct JoinContext<'info> {
         space = UserPool::LEN,
         seeds = [USER_POOL_SEED.as_ref(), pool.key().as_ref(), auth.key().as_ref()],
         bump
-
     )]
     pub user_pool: Account<'info, UserPool>,
     #[account(mut)]

@@ -27,6 +27,18 @@ export function findStrategiesAccount(
     programId
   );
 }
+
+export function findUserPoolAccount(
+  programId: anchor.web3.PublicKey,
+  pool: anchor.web3.PublicKey,
+  user: anchor.web3.PublicKey
+) {
+  return anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("USER_POOL"), pool.toBuffer(), user.toBuffer()],
+    programId
+  );
+}
+
 export const USDC_MINT = new anchor.web3.PublicKey('Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr')
 export function findUsdcTokenAccount(
   user: anchor.web3.PublicKey,
