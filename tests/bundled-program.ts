@@ -2,12 +2,15 @@ import * as anchor from "@coral-xyz/anchor";
 import { AnchorError, Program } from "@coral-xyz/anchor";
 import { BundledProgram } from "../target/types/bundled_program";
 import {
+  USDC_MINT,
   findProviderPoolAccount,
   findStrategiesAccount,
   findSystemAccount,
+  findUsdcTokenAccount,
 } from "./utils";
 import { expect, use } from "chai";
 import * as chaibn from "chai-bn";
+import { ASSOCIATED_PROGRAM_ID, TOKEN_PROGRAM_ID, associatedAddress } from "@coral-xyz/anchor/dist/cjs/utils/token";
 use(chaibn.default(anchor.BN));
 
 describe("bundled-program", () => {
@@ -28,7 +31,7 @@ describe("bundled-program", () => {
         rent: anchor.web3.SYSVAR_RENT_PUBKEY,
       })
       .rpc();
-    console.log("Your transaction signature", tx);
+    // console.log("Your transaction signature", tx);
   });
   it("Cannot re-initialized!", async () => {
     const [systemAccount] = findSystemAccount(program.programId);
@@ -42,7 +45,7 @@ describe("bundled-program", () => {
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
         })
         .rpc();
-      console.log("Your transaction signature", tx);
+      // console.log("Your transaction signature", tx);
     } catch (error) {
       expect(error).to.be.instanceOf(AnchorError);
       expect((error as AnchorError).error.errorCode.code).to.equal(
@@ -55,6 +58,7 @@ describe("bundled-program", () => {
       program.programId,
       myWallet.publicKey
     );
+    const [usdc_pool] = findUsdcTokenAccount(pool)
     const [strategiesAccount] = findStrategiesAccount(program.programId, pool);
     const expired_at = new anchor.BN(Math.floor(Date.now() / 1000));
     const fee = new anchor.BN(1);
@@ -119,6 +123,12 @@ describe("bundled-program", () => {
         pool,
         auth: myWallet.publicKey,
         strageties: strategiesAccount,
+        usdcMint: USDC_MINT,
+        usdcPoolTokenAccount: usdc_pool,
+        systemProgram: anchor.web3.SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_PROGRAM_ID,
+        rent: anchor.web3.SYSVAR_RENT_PUBKEY
       })
       .rpc();
 

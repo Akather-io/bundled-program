@@ -15,4 +15,5 @@ pub const VECTOR_OVERHEAD_SIZE: usize = 4;
 pub const SYSTEM_SEED: &[u8] = b"SYSTEM";
 pub const PROVIDER_POOL_SEED: &[u8] = b"PROVIDER_POOL";
 pub const STRATEGIES_SEED: &[u8] = b"STRATEGIES";
+pub const USER_POOL_SEED: &[u8] = b"USER_POOL";
 pub const SYMBOL_MAX_LENGTH: usize = 5;

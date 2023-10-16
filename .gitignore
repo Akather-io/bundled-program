@@ -7,3 +7,4 @@ node_modules
 test-ledger
 .yarn
 Anchor.toml
+app/.env.*

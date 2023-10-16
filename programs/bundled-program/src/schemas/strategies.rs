@@ -1,4 +1,4 @@
-use crate::constants::*;
+use crate::{constants::*, errors::ErrorMessages};
 use anchor_lang::prelude::*;
 
 #[account]
@@ -40,8 +40,13 @@ impl Strategies {
     pub fn calculate_size(size: u8) -> usize {
         Strategies::LEN + (size as usize * Strategy::LEN)
     }
-    pub fn init(&mut self, pool: Pubkey, strategies: Vec<Strategy>) {
+    pub fn init(&mut self, pool: Pubkey, strategies: Vec<Strategy>) -> Result<()> {
+        require!(
+            self.pool == Pubkey::default(),
+            ErrorMessages::AlreadyInitialized
+        );
         self.pool = pool;
         self.strategies = strategies;
+        Ok(())
     }
 }

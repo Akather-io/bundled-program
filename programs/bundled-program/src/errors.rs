@@ -6,4 +6,6 @@ pub enum ErrorMessages {
     InvalidAmount,
     #[msg("Already initialized")]
     AlreadyInitialized,
+    #[msg("Invalid option number")]
+    InvalidOptionNumber,
 }

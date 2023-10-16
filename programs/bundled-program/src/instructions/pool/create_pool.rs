@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-
+use anchor_spl::{associated_token, token};
 use crate::{
     constants::{PROVIDER_POOL_SEED,STRATEGIES_SEED}, 
     schemas::{ProviderPool,JudgementLevel, Strategies, Strategy}, 
@@ -24,9 +24,20 @@ pub struct CreatePool<'info> {
 
     )]
     pub strageties: Account<'info, Strategies>,
+    // #[account(address = mint::USDC)]
+    pub usdc_mint: Box<Account<'info, token::Mint>>,
+    #[account(
+        init,
+        payer = auth,
+        associated_token::mint = usdc_mint,
+        associated_token::authority = pool
+    )]
+    pub usdc_pool_token_account: Account<'info, token::TokenAccount>,
     #[account(mut)]
     pub auth: Signer<'info>,
     pub system_program: Program<'info, System>,
+    pub token_program: Program<'info, token::Token>,
+    pub associated_token_program: Program<'info, associated_token::AssociatedToken>,
     pub rent: Sysvar<'info, Rent>,
 }
 
@@ -44,7 +55,7 @@ pub fn handler(
     let strategies_acc = &mut ctx.accounts.strageties;
     let admin = ctx.accounts.auth.key();
 
-    strategies_acc.init(pool.key(), strategies);
+    strategies_acc.init(pool.key(), strategies)?;
 
     pool.init(
         admin, 
